@@ -6,12 +6,40 @@ import java.io.*;
 
 public class Main{
   
-//login removed, don't think there is a login aspect for this part
+//login replaced with database setup
+public static void setup(int type){
+  switch(type){
+  case 1:
+    Globals.dbConfig.setType(DatabaseType.BTREE);
+    Globals.dbConfig.setAllowCreate(true);
+    
+    System.out.println("Database setup is: Btree.");
+    break;
+  case 2:
+    Globals.dbConfig.setType(DatabaseType.HASH);
+    Globals.dbConfig.setAllowCreate(true);
+
+    System.out.println("Database setup is: Hash.");
+    break;
+  case 3:
+    //something something
+    System.out.println("Indexfile coming soon!");
+    break;
+  }//end of switch
+
+  try{
+   Globals.my_table = new Database(Globals.location, null, Globals.dbConfig);
+  }catch(Exception eep){
+    System.err.println("Could not create the database:" + eep.toString());
+  }
+   
+}
 
 
 public static void menu(){
   //main menu for navigation
 
+  AddData add = new AddData();
   
   System.out.println("-----------------------------------------------------");
   
@@ -32,7 +60,8 @@ public static void menu(){
       switch(number){
       case 1:
         System.out.println("Welcome to The Database Populating System!");
-        
+
+        add.getEntry();
         
         //returning from this - go back to the main menu
         System.out.println();
@@ -97,7 +126,8 @@ public static void menu(){
       if(args.length == 1){
 
         try{
-          int value = Integer.parseInt(args[0]); //assign this to a global later probably
+          int value = Integer.parseInt(args[0]);
+          setup(value);
         }catch(NumberFormatException e){
           System.err.println("Input must be a number: 1 2 3");
           System.exit(1);
