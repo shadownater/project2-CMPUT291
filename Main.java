@@ -1,7 +1,7 @@
 import java.util.*;
 import com.sleepycat.db.*;
 import java.io.*;
-
+import java.io.File.*;
                 
 
 public class Main{
@@ -102,6 +102,7 @@ public static void menu(){
         
       case 6:
         System.out.println("Bye-bye!");
+        Globals.file.delete();
         System.exit(0);
         break;
         

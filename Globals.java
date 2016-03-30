@@ -12,6 +12,9 @@ public class Globals{
   //**NEED to code a way to create this and remove it after testing!!!!!
   public static final String location = "/tmp/jlovas_db"; 
 
+  //not really sure which one i need?
+  public static File file = new File(location);
+  
   //tracking the number entries - might not need this, will see                 
   public static int num = 0;
 
