@@ -1,0 +1,6 @@
+### Files to ignore in github ###
+
+*.java~
+*.class
+*.sh~
+*.gitignore~

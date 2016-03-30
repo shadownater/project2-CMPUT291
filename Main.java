@@ -1,5 +1,5 @@
 import java.util.*;
-import com.sleepycat.db.*; //for Berkeley DB stuff
+import com.sleepycat.db.*;
 import java.io.*;
 
                 
@@ -13,13 +13,13 @@ public static void setup(int type){
     Globals.dbConfig.setType(DatabaseType.BTREE);
     Globals.dbConfig.setAllowCreate(true);
     
-    System.out.println("Database setup is: Btree.");
+    System.out.println("Database setup is: btree.");
     break;
   case 2:
     Globals.dbConfig.setType(DatabaseType.HASH);
     Globals.dbConfig.setAllowCreate(true);
 
-    System.out.println("Database setup is: Hash.");
+    System.out.println("Database setup is: hash.");
     break;
   case 3:
     //something something
