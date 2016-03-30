@@ -7,32 +7,30 @@ import java.io.*;
 public class Main{
   
 //login replaced with database setup
-public static void setup(int type){
-  switch(type){
-  case 1:
+public static void setup(String type){
+  if(type.equalsIgnoreCase("BTREE")){
     Globals.dbConfig.setType(DatabaseType.BTREE);
     Globals.dbConfig.setAllowCreate(true);
     
     System.out.println("Database setup is: btree.");
-    break;
-  case 2:
+  }
+  else if(type.equalsIgnoreCase("HASH")){
     Globals.dbConfig.setType(DatabaseType.HASH);
     Globals.dbConfig.setAllowCreate(true);
-
+    
     System.out.println("Database setup is: hash.");
-    break;
-  case 3:
+  }
+  else if(type.equalsIgnoreCase("INDEXFILE")){
     //something something
     System.out.println("Indexfile coming soon!");
-    break;
-  }//end of switch
-
+  }
+  
   try{
-   Globals.my_table = new Database(Globals.location, null, Globals.dbConfig);
+    Globals.my_table = new Database(Globals.location, null, Globals.dbConfig);
   }catch(Exception eep){
     System.err.println("Could not create the database:" + eep.toString());
   }
-   
+  
 }
 
 
@@ -123,21 +121,24 @@ public static void menu(){
     public static void main(String[] args){
 
       //get the args, make sure there are args
+      System.out.println(args.length);
       if(args.length == 1){
 
-        try{
-          int value = Integer.parseInt(args[0]);
-          setup(value);
-        }catch(NumberFormatException e){
-          System.err.println("Input must be a number: 1 2 3");
-          System.exit(1);
+        //takes: btree, hash, indexfile
+        if(args[0].equalsIgnoreCase("BTREE") || args[0].equalsIgnoreCase("HASH") || args[0].equalsIgnoreCase("INDEXFILE")){
+
+          setup(args[0]);
+          
+        }else{
+          System.out.println("Not the right input. Require: Btree, Hash, IndexFile");
+          System.exit(0);
         }
         
       }else{
         System.out.println("One argument required:\n" +
-                           "'1' - BTree\n" +
-                           "'2' - Hash\n" +
-                           "'3' - IndexFile");
+                           "BTree\n" +
+                           "Hash\n" +
+                           "IndexFile");
         System.exit(0);
       }
         
