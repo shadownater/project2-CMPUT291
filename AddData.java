@@ -11,8 +11,9 @@ public class AddData{
   public void populateTable(){
     int range;
     DatabaseEntry kdbt, ddbt;
+    DatabaseEntry empty = new DatabaseEntry();
     String s;
-
+    int count=0;
     /*
      *  generate a random string with the length between 64 and 127,
      *  inclusive.
@@ -20,20 +21,26 @@ public class AddData{
      *  Seed the random number once and once only.
      */
     Random random = new Random(1000000);
-
+    OperationStatus opSts;
+    
     try {
-      for (int i = 0; i < 1000; i++) {
 
+      Cursor cursor = Globals.my_table.openCursor(null, null);
+      
+      for (int i = 0; i < 100000; i++) {
+
+        do{
+        
         /* to generate a key string */
         range = 64 + random.nextInt( 64 );
         s = "";
         for ( int j = 0; j < range; j++ )
           s+=(new Character((char)(97+random.nextInt(26)))).toString();
-
+        
         /* to create a DBT for key */
         kdbt = new DatabaseEntry(s.getBytes());
         kdbt.setSize(s.length());
-
+        
         // to print out the key/data pair
         // System.out.println(s);
 
@@ -50,10 +57,21 @@ public class AddData{
         ddbt = new DatabaseEntry(s.getBytes());
         ddbt.setSize(s.length());
 
+
+        //check if the key is already in the database!
+        //assignment says not to reuse a rejected key/data pair, so im NOT
+        //whatever data the key it matched with will also be rejected
+        opSts = cursor.getSearchKey(kdbt, empty, null);
+        //System.out.println("opSts = " + opSts);
+        
+        }while(opSts == OperationStatus.SUCCESS);
+        
         /* to insert the key/data pair into the database */
         Globals.my_table.putNoOverwrite(null, kdbt, ddbt);
+        count++;
       }
       System.out.println("Table successfully populated!");
+      System.out.println("Count's value is: " + count);
     }
     catch (DatabaseException dbe) {
       System.err.println("Populate the table: "+dbe.toString());

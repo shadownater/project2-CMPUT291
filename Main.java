@@ -106,6 +106,7 @@ public static void menu(String value){
         
       case 6:
         System.out.println("Bye-bye!");
+        add.destroyTable();
         Globals.file.delete();
         System.exit(0);
         break;
