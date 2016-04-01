@@ -41,6 +41,7 @@ public static void menu(String value){
   //main menu for navigation
 
   AddData add = new AddData();
+  HashFunctions hasher = new HashFunctions();
   
   System.out.println("-----------------------------------------------------");
   
@@ -70,16 +71,50 @@ public static void menu(String value){
         break;
         
       case 2:
-        System.out.println("Welcome to Record Retrieval with Your Given Key!");
+        System.out.println("Welcome to Record Retrieval with Your Given Key!\n" +
+          "Please enter the key you wish to find: ");
+
+        String keyInput = scanner.nextLine();
+
         
         
+        //do the thing based on the chosen type on run:
+        if(value.equalsIgnoreCase("BTREE")){
+          
+          
+        }
+        else if(value.equalsIgnoreCase("HASH")){
+          hasher.findByKey(keyInput);
+          
+          
+        }
+        else if(value.equalsIgnoreCase("INDEXFILE")){
+          
+        }
+        
+
         //returning from this - go back to the main menu
         System.out.println();
         menu(value);
         break;
         
       case 3:
-        System.out.println("Welcome to Record Retrieval with Your Given Data!");
+        System.out.println("Welcome to Record Retrieval with Your Given Data!\n" +
+          "Please enter the data you wish to find: ");
+
+        String dataInput = scanner.nextLine();
+
+        if(value.equalsIgnoreCase("BTREE")){
+          
+        }
+        else if(value.equalsIgnoreCase("HASH")){
+          hasher.findByData(dataInput);
+          
+        }
+        else if(value.equalsIgnoreCase("INDEXFILE")){
+
+        }
+        
         
         //returning from this - go back to the main menu
         System.out.println();
@@ -87,8 +122,26 @@ public static void menu(String value){
         break;
         
       case 4:
-        System.out.println("Welcome to Record Retrieval with a Given Range of Key Values!");
-	
+        System.out.println("Welcome to Record Retrieval with a Given Range of Key Values!\n" +
+                           "Please enter the lower bound: ");
+
+        String rangeInput1 = scanner.nextLine();
+
+        System.out.println("Upper bound: ");
+
+        String rangeInput2 = scanner.nextLine();
+        
+        if(value.equalsIgnoreCase("BTREE")){
+          
+        }
+        else if(value.equalsIgnoreCase("HASH")){
+          hasher.findByRange(rangeInput1, rangeInput2);
+        }
+        else if(value.equalsIgnoreCase("INDEXFILE")){
+
+        }
+        
+        
         //returning from this - go back to the main menu
         System.out.println();
         menu(value);
