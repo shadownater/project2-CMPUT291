@@ -21,7 +21,10 @@ public static void setup(String type){
     System.out.println("Database setup is: hash.");
   }
   else if(type.equalsIgnoreCase("INDEXFILE")){
-    //something something
+    Globals.dbConfig.setType(DatabaseType.BTREE);
+    Globals.dbConfig.setAllowCreate(true);
+    
+    //needs something more to it than this
     System.out.println("Indexfile coming soon!");
   }
   
@@ -34,7 +37,7 @@ public static void setup(String type){
 }
 
 
-public static void menu(){
+public static void menu(String value){
   //main menu for navigation
 
   AddData add = new AddData();
@@ -57,13 +60,13 @@ public static void menu(){
 
       switch(number){
       case 1:
-        System.out.println("Welcome to The Database Populating System!");
+        System.out.println("Populating the database... ");
 
-        add.getEntry();
+        add.populateTable();
         
         //returning from this - go back to the main menu
         System.out.println();
-        menu();
+        menu(value);
         break;
         
       case 2:
@@ -72,7 +75,7 @@ public static void menu(){
         
         //returning from this - go back to the main menu
         System.out.println();
-        menu();
+        menu(value);
         break;
         
       case 3:
@@ -80,7 +83,7 @@ public static void menu(){
         
         //returning from this - go back to the main menu
         System.out.println();
-        menu();
+        menu(value);
         break;
         
       case 4:
@@ -88,16 +91,17 @@ public static void menu(){
 	
         //returning from this - go back to the main menu
         System.out.println();
-        menu();
+        menu(value);
         break;
         
       case 5:
         //they probably want this to happen right away since it's being done by a program
-        System.out.println("Destroying the database (!!!!!!!!)");
+        add.destroyTable();
+        setup(input);
         
         //returning from search - go back to the main menu
         System.out.println();
-        menu();
+        menu(value);
         break;
         
       case 6:
@@ -108,13 +112,13 @@ public static void menu(){
         
       default:
         System.out.println("That is not a valid input! Try again.");
-        menu(); //iffy but fix later if problems
+        menu(value); //iffy but fix later if problems
         break;
 
       }
     }catch(NumberFormatException e){
       System.out.println("That is not a valid input! Try again.");
-      menu(); //this is kinda weird but works for now
+      menu(value); //this is kinda weird but works for now
     }  
 
 }
@@ -147,12 +151,12 @@ public static void menu(){
         try{
             // Initialize "global" scanner
             //Scanner scanner = IO.getScanner("test.txt");
-            menu();
+            menu(args[0]);
         }catch(NoSuchElementException e){
           //System.out.println("End of tests, returning to stdin.");
 
           //Scanner scanner = IO.resetScanner();
-            menu();
+            menu(args[0]);
         }
             
         System.out.println("Bye! :D");
