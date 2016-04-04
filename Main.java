@@ -6,193 +6,195 @@ import java.io.File.*;
 
 public class Main{
   
-//login replaced with database setup
-public static void setup(String type){
-  if(type.equalsIgnoreCase("BTREE")){
-    Globals.dbConfig.setType(DatabaseType.BTREE);
-    Globals.dbConfig.setAllowCreate(true);
+  //login replaced with database setup
+  public static void setup(String type){
+    if(type.equalsIgnoreCase("BTREE")){
+      Globals.dbConfig.setType(DatabaseType.BTREE);
+      Globals.dbConfig.setAllowCreate(true);
     
-    System.out.println("Database setup is: btree.");
-  }
-  else if(type.equalsIgnoreCase("HASH")){
-    Globals.dbConfig.setType(DatabaseType.HASH);
-    Globals.dbConfig.setAllowCreate(true);
+      System.out.println("Database setup is: btree.");
+    }
+    else if(type.equalsIgnoreCase("HASH")){
+      Globals.dbConfig.setType(DatabaseType.HASH);
+      Globals.dbConfig.setAllowCreate(true);
     
-    System.out.println("Database setup is: hash.");
-  }
-  else if(type.equalsIgnoreCase("INDEXFILE")){
-    Globals.dbConfig.setType(DatabaseType.BTREE);
-    Globals.dbConfig.setAllowCreate(true);
-    Globals.secDbConfig.setSortedDuplicates(true);
+      System.out.println("Database setup is: hash.");
+    }
+    else if(type.equalsIgnoreCase("INDEXFILE")){
+      Globals.dbConfig.setType(DatabaseType.BTREE);
+      Globals.dbConfig.setAllowCreate(true);
+      Globals.secDbConfig.setSortedDuplicates(true);
     
-    Globals.secDbConfig.setAllowCreate(true);
-    Globals.secDbConfig.setSortedDuplicates(true);
-    Globals.secDbConfig.setKeyCreator(Globals.keyCreator);
-    Globals.secDbConfig.setType(DatabaseType.BTREE);
-  }
+      Globals.secDbConfig.setAllowCreate(true);
+      Globals.secDbConfig.setSortedDuplicates(true);
+      Globals.secDbConfig.setKeyCreator(Globals.keyCreator);
+      Globals.secDbConfig.setType(DatabaseType.BTREE);
+
+      System.out.println("Database setup is: indexfile.");    
+    }
   
-  try{
-    // Start by creating working directory
-    DirectoryHelper.makeDirectory(Globals.location);
+    try{
+      // Start by creating working directory
+      DirectoryHelper.makeDirectory(Globals.location);
     
     
-  }catch(Exception e){
-    System.err.println("Could not create directory " + Globals.location +
-                       " " + e.toString());
-  }
+    }catch(Exception e){
+      System.err.println("Could not create directory " + Globals.location +
+                         ": " + e.toString());
+    }
   
-}
+  }
 
 
-public static void menu(String value){
-  //main menu for navigation
+  public static void menu(String value){
+    //main menu for navigation
 
-  AddData add = new AddData();  
+    AddData add = new AddData();  
 
-  //listen for input
-  Scanner scanner = IO.getScanner();
-  String input;
-  int n = 0;
+    //listen for input
+    Scanner scanner = IO.getScanner();
+    String input;
+    int n = 0;
 
-  // main loop, ie application engine
-  while(true){
+    // main loop, ie application engine
+    while(true){
       if (n != -1) {
-          System.out.println("-----------------------------------------------------"); 
-          System.out.println("Welcome to the Database System!");
-          System.out.println("Please select an option to begin:");
-          System.out.println("1- Create and populate a database");
-          System.out.println("2- Retrieve records with a given key");
-          System.out.println("3- Retrieve records with a given data");
-          System.out.println("4- Retrieve records with a given range of key values");
-          System.out.println("5- Destroy the database (!!!)");
-          System.out.println("6- Quit");                    
-          System.out.println("-----------------------------------------------------");
+        System.out.println("-----------------------------------------------------"); 
+        System.out.println("Welcome to the Database System!");
+        System.out.println("Please select an option to begin:");
+        System.out.println("1- Create and populate a database");
+        System.out.println("2- Retrieve records with a given key");
+        System.out.println("3- Retrieve records with a given data");
+        System.out.println("4- Retrieve records with a given range of key values");
+        System.out.println("5- Destroy the database (!!!)");
+        System.out.println("6- Quit");                    
+        System.out.println("-----------------------------------------------------");
       }
 
       // Get input
       input = scanner.nextLine();
       try {
-          n = Integer.parseInt(input);
+        n = Integer.parseInt(input);
       } catch(Exception e){
-          n = -1;
+        n = -1;
       }          
 
       // Case 1
       if (n == 1) {
-          System.out.println("Populating the database... ");
-          try {
-              // Create database
-              Globals.my_table = new Database(Globals.location + "/" + Globals.db_filename,
-                                              null,
-                                              Globals.dbConfig);
+        System.out.println("Populating the database... ");
+        try {
+          // Create database
+          Globals.my_table = new Database(Globals.location + "/" + Globals.db_filename,
+                                          null,
+                                          Globals.dbConfig);
 
-              // Create secondary database (secondary index) if applicable
-              if(value.equalsIgnoreCase("INDEXFILE")){
-                  Globals.secDb = new SecondaryDatabase(Globals.location + "/" + Globals.sdb_filename,
-                                                        null,
-                                                        Globals.my_table,
-                                                        Globals.secDbConfig);
-              }
-          } catch(Exception e){
-              System.out.println("Could not create database: " + e);
+          // Create secondary database (secondary index) if applicable
+          if(value.equalsIgnoreCase("INDEXFILE")){
+            Globals.secDb = new SecondaryDatabase(Globals.location + "/" + Globals.sdb_filename,
+                                                  null,
+                                                  Globals.my_table,
+                                                  Globals.secDbConfig);
           }
+        } catch(Exception e){
+          System.out.println("Could not create database: " + e);
+        }
 
-          // Populate Database
-          add.populateTable();
+        // Populate Database
+        add.populateTable();
         
-          //returning from this - go back to the main menu
-          System.out.println();
+        //returning from this - go back to the main menu
+        System.out.println();
       }
 
       // Case 2
       else if (n == 2) {
-          System.out.println("Welcome to Record Retrieval with Your Given Key!");
+        System.out.println("Welcome to Record Retrieval with Your Given Key!");
         
-          //returning from this - go back to the main menu
+        //returning from this - go back to the main menu
 
-          System.out.println();
+        System.out.println();
       }
 
       // Case 3
       else if (n == 3) {
-          System.out.println("Welcome to Record Retrieval with Your Given Data!");
+        System.out.println("Welcome to Record Retrieval with Your Given Data!");
         
-          //returning from this - go back to the main menu
-          System.out.println();
+        //returning from this - go back to the main menu
+        System.out.println();
       }
       // Case 4
       else if (n == 4) {
-          System.out.println("Welcome to Record Retrieval with a Given Range of Key Values!");
+        System.out.println("Welcome to Record Retrieval with a Given Range of Key Values!");
 	
-          //returning from this - go back to the main menu
-          System.out.println();
-      }
+      //returning from this - go back to the main menu
+      System.out.println();
+    }
       
-      // Case 5
-      else if (n == 5) {
-          // KG: Just destroy the database, no need to do extra?
-          // JL: they probably want this to happen right away
-          //     since it's being done by a program
-          add.destroyTable();
-          // setup(input); <-- needed?
+    // Case 5
+    else if (n == 5) {
+      // KG: Just destroy the database, no need to do extra?
+      // JL: they probably want this to happen right away
+      //     since it's being done by a program
+      add.destroyTable();
+      // setup(input); <-- needed?
         
-          //returning from search - go back to the main menu
-          System.out.println();
-      }
-      // Case 6
-      else if (n == 6) {
-          System.out.println("Bye-bye!");
-          DirectoryHelper.deleteDir(Globals.location);
-          System.exit(0);
-      }
+      //returning from search - go back to the main menu
+      System.out.println();
+    }
+    // Case 6
+    else if (n == 6) {
+      System.out.println("Bye-bye!");
+      DirectoryHelper.deleteDir(Globals.location);
+      System.exit(0);
+    }
 
-      // Default
-      else {
-          System.out.println("That is not a valid input! Try again.");
+    // Default
+    else {
+      System.out.println("That is not a valid input! Try again.");
 
-          // set so menu is not 'redrawn'
-          n = -1;
-      }
+      // set so menu is not 'redrawn'
+      n = -1;
+    }
   }
 }
 
   public static void main(String[] args){
-     //get the args, make sure there are args
-     System.out.println(args.length);
-     if(args.length == 1){
+    //get the args, make sure there are args
+    System.out.println(args.length);
+    if(args.length == 1){
 
-       //takes: btree, hash, indexfile
-       if(args[0].equalsIgnoreCase("BTREE") ||
-          args[0].equalsIgnoreCase("HASH") ||
-          args[0].equalsIgnoreCase("INDEXFILE")){
+      //takes: btree, hash, indexfile
+      if(args[0].equalsIgnoreCase("BTREE") ||
+         args[0].equalsIgnoreCase("HASH") ||
+         args[0].equalsIgnoreCase("INDEXFILE")){
 
-         setup(args[0]);
+        setup(args[0]);
           
-       }else{
-         System.out.println("Please specify: Btree, Hash, IndexFile");
-         System.exit(0);
-       }
+      }else{
+        System.out.println("Please specify: Btree, Hash, IndexFile");
+        System.exit(0);
+      }
         
-     }else{
-       System.out.println("One argument required:\n" +
-                          "BTree\n" +
-                          "Hash\n" +
-                          "IndexFile");
-       System.exit(0);
-     }
+    }else{
+      System.out.println("One argument required:\n" +
+                         "BTree\n" +
+                         "Hash\n" +
+                         "IndexFile");
+      System.exit(0);
+    }
         
         
-     try{
-       // Initialize "global" scanner
-       //Scanner scanner = IO.getScanner("test.txt");
-       menu(args[0]);
-     }catch(NoSuchElementException e){
-       //System.out.println("End of tests, returning to stdin.");
+    try{
+      // Initialize "global" scanner
+      //Scanner scanner = IO.getScanner("test.txt");
+      menu(args[0]);
+    }catch(NoSuchElementException e){
+      //System.out.println("End of tests, returning to stdin.");
 
-       //Scanner scanner = IO.resetScanner();
-       menu(args[0]);
-     }
+      //Scanner scanner = IO.resetScanner();
+      menu(args[0]);
+    }
             
-     System.out.println("Bye! :D");
+    System.out.println("Bye! :D");
   }//end of main
 }
