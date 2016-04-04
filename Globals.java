@@ -13,7 +13,7 @@ public class Globals{
   public static final String location = "/tmp/jlovas_db";
     
   //not really sure which one i need?
-  //public static File file = new File(location);
+  public static File answers = new File("answers");
   
   //tracking the number entries - might not need this, will see                 
   public static int num = 0;

@@ -7,7 +7,7 @@ import java.io.File.*;
 //this class will handle the cases of using the hash
 public class HashFunctions{
 
-  long beforeTime, afterTime;
+  long beforeTime, afterTime, queryTime;
   
 //this function uses the hash table setup to search for a given key
   public void findByKey(String input){
@@ -29,8 +29,15 @@ public class HashFunctions{
 
       //if success - found something
       if(opSts == OperationStatus.SUCCESS){
-      //get time stamp
+        
+        //display number of records retrieved (number!)
+        
+        //get time stamp
         afterTime = System.nanoTime();
+
+        queryTime = afterTime - beforeTime;
+        queryTime *= 0.001;
+        System.out.println("Query time: " + queryTime + "microseconds");
 
       //do this 4 times with different values each time!
       //then record the average
@@ -45,7 +52,7 @@ public class HashFunctions{
       System.err.println("Search by key: "+dbe.toString());
       System.exit(1);
     }
-    System.out.println(beforeTime);
+    
   }
 
   public void findByData(String input){
