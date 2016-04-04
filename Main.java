@@ -71,7 +71,11 @@ public static void menu(String value){
 
       // Get input
       input = scanner.nextLine();
-      n = Integer.parseInt(input);          
+      try {
+          n = Integer.parseInt(input);
+      } catch(Exception e){
+          n = -1;
+      }          
 
       // Case 1
       if (n == 1) {
