@@ -23,15 +23,22 @@ public static void setup(String type){
   else if(type.equalsIgnoreCase("INDEXFILE")){
     Globals.dbConfig.setType(DatabaseType.BTREE);
     Globals.dbConfig.setAllowCreate(true);
+    Globals.secDbConfig.setSortedDuplicates(true);
     
-    //needs something more to it than this
-    System.out.println("Indexfile coming soon!");
+    Globals.secDbConfig.setAllowCreate(true);
+    Globals.secDbConfig.setSortedDuplicates(true);
+    Globals.secDbConfig.setKeyCreator(Globals.keyCreator);
+    Globals.secDbConfig.setType(DatabaseType.BTREE);
   }
   
   try{
-    Globals.my_table = new Database(Globals.location, null, Globals.dbConfig);
-  }catch(Exception eep){
-    System.err.println("Could not create the database:" + eep.toString());
+    // Start by creating working directory
+    DirectoryHelper.makeDirectory(Globals.location);
+    
+    
+  }catch(Exception e){
+    System.err.println("Could not create directory " + Globals.location +
+                       " " + e.toString());
   }
   
 }
@@ -40,44 +47,73 @@ public static void setup(String type){
 public static void menu(String value){
   //main menu for navigation
 
-  AddData add = new AddData();
   HashFunctions hasher = new HashFunctions();
-  
-  System.out.println("-----------------------------------------------------");
-  
-  System.out.println("Welcome to the Database System!\n Please select an option to begin:");
 
-  System.out.println("1- Create and populate a database\n2- Retrieve records with a given key\n3- Retrieve records with a given data\n4- Retrieve records with a given range of key values\n5- Destroy the database (!!!)\n6- Quit");
+  AddData add = new AddData();  
 
-    System.out.println("-----------------------------------------------------");
+  //listen for input
+  Scanner scanner = IO.getScanner();
+  String input;
+  int n = 0;
+
+  // main loop, ie application engine
+  while(true){
+      if (n != -1) {
+          System.out.println("-----------------------------------------------------"); 
+          System.out.println("Welcome to the Database System!");
+          System.out.println("Please select an option to begin:");
+          System.out.println("1- Create and populate a database");
+          System.out.println("2- Retrieve records with a given key");
+          System.out.println("3- Retrieve records with a given data");
+          System.out.println("4- Retrieve records with a given range of key values");
+          System.out.println("5- Destroy the database (!!!)");
+          System.out.println("6- Quit");                    
+          System.out.println("-----------------------------------------------------");
+      }
 
 
-    //listen for input
-    Scanner scanner = IO.getScanner();
-    String input = scanner.nextLine();
+      // Get input
+      input = scanner.nextLine();
+      try {
+          n = Integer.parseInt(input);
+      } catch(Exception e){
+          n = -1;
+      }          
 
-    try{
-      int number = Integer.parseInt(input);
+      // Case 1
+      if (n == 1) {
+          System.out.println("Populating the database... ");
+          try {
+              // Create database
+              Globals.my_table = new Database(Globals.location + "/" + Globals.db_filename,
+                                              null,
+                                              Globals.dbConfig);
 
-      switch(number){
-      case 1:
-        System.out.println("Populating the database... ");
+              // Create secondary database (secondary index) if applicable
+              if(value.equalsIgnoreCase("INDEXFILE")){
+                  Globals.secDb = new SecondaryDatabase(Globals.location + "/" + Globals.sdb_filename,
+                                                        null,
+                                                        Globals.my_table,
+                                                        Globals.secDbConfig);
+              }
+          } catch(Exception e){
+              System.out.println("Could not create database: " + e);
+          }
 
-        add.populateTable();
+          // Populate Database
+          add.populateTable();
         
-        //returning from this - go back to the main menu
-        System.out.println();
-        menu(value);
-        break;
-        
-      case 2:
-        System.out.println("Welcome to Record Retrieval with Your Given Key!\n" +
-          "Please enter the key you wish to find: ");
+          //returning from this - go back to the main menu
+          System.out.println();
+      }
+
+      // Case 2
+      else if (n == 2) {
+          System.out.println("Welcome to Record Retrieval with Your Given Key!\n" +
+                             "Please enter the key you wish to find: ");
 
         String keyInput = scanner.nextLine();
 
-        
-        
         //do the thing based on the chosen type on run:
         if(value.equalsIgnoreCase("BTREE")){
           
@@ -91,15 +127,15 @@ public static void menu(String value){
         else if(value.equalsIgnoreCase("INDEXFILE")){
           
         }
-        
+          
+          //returning from this - go back to the main menu
 
-        //returning from this - go back to the main menu
-        System.out.println();
-        menu(value);
-        break;
-        
-      case 3:
-        System.out.println("Welcome to Record Retrieval with Your Given Data!\n" +
+          System.out.println();
+      }
+
+      // Case 3
+      else if (n == 3) {
+          System.out.println("Welcome to Record Retrieval with Given Data!\n" +
           "Please enter the data you wish to find: ");
 
         String dataInput = scanner.nextLine();
@@ -115,13 +151,11 @@ public static void menu(String value){
 
         }
         
-        
-        //returning from this - go back to the main menu
-        System.out.println();
-        menu(value);
-        break;
-        
-      case 4:
+          //returning from this - go back to the main menu
+          System.out.println();
+      }
+      // Case 4
+      else if (n == 4) {
         System.out.println("Welcome to Record Retrieval with a Given Range of Key Values!\n" +
                            "Please enter the lower bound: ");
 
@@ -140,82 +174,76 @@ public static void menu(String value){
         else if(value.equalsIgnoreCase("INDEXFILE")){
 
         }
-        
-        
-        //returning from this - go back to the main menu
-        System.out.println();
-        menu(value);
-        break;
-        
-      case 5:
-        //they probably want this to happen right away since it's being done by a program
-        add.destroyTable();
-        setup(input);
-        
-        //returning from search - go back to the main menu
-        System.out.println();
-        menu(value);
-        break;
-        
-      case 6:
-        System.out.println("Bye-bye!");
-        add.destroyTable();
-        Globals.file.delete();
-        System.exit(0);
-        break;
-        
-      default:
-        System.out.println("That is not a valid input! Try again.");
-        menu(value); //iffy but fix later if problems
-        break;
-
+	
+          //returning from this - go back to the main menu
+          System.out.println();
       }
-    }catch(NumberFormatException e){
-      System.out.println("That is not a valid input! Try again.");
-      menu(value); //this is kinda weird but works for now
-    }  
+      
+      // Case 5
+      else if (n == 5) {
+          // KG: Just destroy the database, no need to do extra?
+          // JL: they probably want this to happen right away
+          //     since it's being done by a program
+          add.destroyTable();
+          // setup(input); <-- needed?
+        
+          //returning from search - go back to the main menu
+          System.out.println();
+      }
+      // Case 6
+      else if (n == 6) {
+          System.out.println("Bye-bye!");
+          DirectoryHelper.deleteDir(Globals.location);
+          System.exit(0);
+      }
 
+      // Default
+      else {
+          System.out.println("That is not a valid input! Try again.");
+
+          // set so menu is not 'redrawn'
+          n = -1;
+      }
+  }
 }
 
-    public static void main(String[] args){
+  public static void main(String[] args){
+     //get the args, make sure there are args
+     System.out.println(args.length);
+     if(args.length == 1){
 
-      //get the args, make sure there are args
-      System.out.println(args.length);
-      if(args.length == 1){
+       //takes: btree, hash, indexfile
+       if(args[0].equalsIgnoreCase("BTREE") ||
+          args[0].equalsIgnoreCase("HASH") ||
+          args[0].equalsIgnoreCase("INDEXFILE")){
 
-        //takes: btree, hash, indexfile
-        if(args[0].equalsIgnoreCase("BTREE") || args[0].equalsIgnoreCase("HASH") || args[0].equalsIgnoreCase("INDEXFILE")){
-
-          setup(args[0]);
+         setup(args[0]);
           
-        }else{
-          System.out.println("Not the right input. Require: Btree, Hash, IndexFile");
-          System.exit(0);
-        }
+       }else{
+         System.out.println("Please specify: Btree, Hash, IndexFile");
+         System.exit(0);
+       }
         
-      }else{
-        System.out.println("One argument required:\n" +
-                           "BTree\n" +
-                           "Hash\n" +
-                           "IndexFile");
-        System.exit(0);
-      }
+     }else{
+       System.out.println("One argument required:\n" +
+                          "BTree\n" +
+                          "Hash\n" +
+                          "IndexFile");
+       System.exit(0);
+     }
         
         
-        try{
-            // Initialize "global" scanner
-            //Scanner scanner = IO.getScanner("test.txt");
-            menu(args[0]);
-        }catch(NoSuchElementException e){
-          //System.out.println("End of tests, returning to stdin.");
+     try{
+       // Initialize "global" scanner
+       //Scanner scanner = IO.getScanner("test.txt");
+       menu(args[0]);
+     }catch(NoSuchElementException e){
+       //System.out.println("End of tests, returning to stdin.");
 
-          //Scanner scanner = IO.resetScanner();
-            menu(args[0]);
-        }
+       //Scanner scanner = IO.resetScanner();
+       menu(args[0]);
+     }
             
-        System.out.println("Bye! :D");
-  
- 
-    }//end of main
-
+     System.out.println("Bye! :D");
+  }//end of main
 }

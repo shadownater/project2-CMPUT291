@@ -86,7 +86,9 @@ public class AddData{
     try{
       System.out.println("Destroying the database...");
       Globals.my_table.close();
-      Globals.my_table.remove(Globals.location , null, null); 
+      Globals.my_table.remove(Globals.location + "/" + Globals.db_filename,
+                              null,
+                              null); 
       System.out.println("Database successfully destroyed!");
     }catch(Exception e){
       System.err.println("Problem deleting the table: " + e);
