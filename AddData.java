@@ -22,9 +22,12 @@ public class AddData{
      */
     Random random = new Random(1000000);
     OperationStatus opSts;
+
+    // KG: Two strings to hold key data pairs, which are printed for testing
+    String s1;
+    String s2;
     
     try {
-
       Cursor cursor = Globals.my_table.openCursor(null, null);
       
       for (int i = 0; i < 100000; i++) {
@@ -36,6 +39,9 @@ public class AddData{
         s = "";
         for ( int j = 0; j < range; j++ )
           s+=(new Character((char)(97+random.nextInt(26)))).toString();
+
+        // KG: key
+        s1 = s;
         
         /* to create a DBT for key */
         kdbt = new DatabaseEntry(s.getBytes());
@@ -53,6 +59,9 @@ public class AddData{
         //System.out.println(s);
         //System.out.println("");
 
+        // KG: data
+        s2 = s;
+        
         /* to create a DBT for data */
         ddbt = new DatabaseEntry(s.getBytes());
         ddbt.setSize(s.length());
@@ -69,6 +78,7 @@ public class AddData{
         /* to insert the key/data pair into the database */
         Globals.my_table.putNoOverwrite(null, kdbt, ddbt);
         count++;
+        if (count%20000 == 0)System.out.println("Key: " + s1 + "\nData: " + s2);
       }
       System.out.println("Table successfully populated!");
       System.out.println("Count's value is: " + count);
