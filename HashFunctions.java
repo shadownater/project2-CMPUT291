@@ -29,16 +29,34 @@ public class HashFunctions{
 
       //if success - found something
       if(opSts == OperationStatus.SUCCESS){
-        
-        //display number of records retrieved (number!)
+        System.out.println("Key(s) successfully found. Found " + cursor.count() + " key(s).");
         
         //get time stamp
         afterTime = System.nanoTime();
 
         queryTime = afterTime - beforeTime;
         queryTime *= 0.001;
-        System.out.println("Query time: " + queryTime + "microseconds");
+        System.out.println("Query time: " + queryTime + " microseconds");
 
+
+        try{
+        
+        //write to the file - requires a writer - second parameter tells it to append!
+          PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Globals.answers.getName(), true)));
+
+        String stuff = new String(data.getData()); 
+        out.println(stuff); 
+        out.close();
+        
+        System.out.println("Results written to answers file.");
+
+        cursor.close();
+        
+        }catch(IOException e){
+          System.err.println("Printwriter error: " + e );
+          System.exit(1);
+        }
+        
       //do this 4 times with different values each time!
       //then record the average
       //put the retrieved key/data pairs in a location called answers

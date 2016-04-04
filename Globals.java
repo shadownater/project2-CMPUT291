@@ -12,8 +12,8 @@ public class Globals{
   //the directory we are storing the data
   public static final String location = "/tmp/jlovas_db";
     
-  //not really sure which one i need?
-  public static File answers = new File("answers");
+  //need to set this up so it deletes on start of the program yaaa
+  public static File answers = new File("answers.txt");
   
   //tracking the number entries - might not need this, will see                 
   public static int num = 0;

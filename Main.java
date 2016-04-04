@@ -36,7 +36,14 @@ public class Main{
     try{
       // Start by creating working directory
       DirectoryHelper.makeDirectory(Globals.location);
-    
+
+      //delete an existing answers file - only deletes on startup
+      if(Globals.answers.exists()){
+        Globals.answers.delete();
+        Globals.answers.createNewFile();
+      }else Globals.answers.createNewFile();
+      
+       
     
     }catch(Exception e){
       System.err.println("Could not create directory " + Globals.location +
