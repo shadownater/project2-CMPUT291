@@ -11,8 +11,6 @@ public class HashFunctions{
   
 //this function uses the hash table setup to search for a given key
   public void findByKey(String input){
-    System.out.println("Find by key haha!");
-
     
     DatabaseEntry keyValue = new DatabaseEntry(input.getBytes());
     keyValue.setSize(input.length());
@@ -44,14 +42,28 @@ public class HashFunctions{
         //write to the file - requires a writer - second parameter tells it to append!
           PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Globals.answers.getName(), true)));
 
-        String stuff = new String(data.getData()); 
-        out.println(stuff); 
-        out.close();
-        
-        System.out.println("Results written to answers file.");
+          //**important formatting part! makre sure it is this way!**
+          
+          String keyStuff = new String(keyValue.getData());
+          String dataStuff = new String(data.getData());
+          
+          //one line for the key string:
+          out.println(keyStuff);
+          
+          //one line for the data string:
+          out.println(dataStuff);
+          
+          //and one line for an empty string:
+          out.println();
+          
+          out.close();
 
-        cursor.close();
-        
+          //**end of cool formatting part**
+          
+          System.out.println("Results written to answers file.");
+          
+          cursor.close();
+          
         }catch(IOException e){
           System.err.println("Printwriter error: " + e );
           System.exit(1);
