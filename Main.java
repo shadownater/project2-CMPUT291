@@ -58,7 +58,8 @@ public class Main{
 
 
     HashFunctions hasher = new HashFunctions();
-
+    IndexfileFunctions indexer = new IndexfileFunctions();
+    
     AddData add = new AddData();  
 
 
@@ -137,6 +138,7 @@ public class Main{
           
         }
         else if(value.equalsIgnoreCase("INDEXFILE")){
+          // btree or hash implement this optimally (KG: my guess btree)
           
         }
           
@@ -162,7 +164,8 @@ public class Main{
           
         }
         else if(value.equalsIgnoreCase("INDEXFILE")){
-
+          // Note: indexer uses secDb, whose keys are data from my_table
+          indexer.findByKey(dataInput);
         }
 
         
@@ -188,6 +191,7 @@ public class Main{
           hasher.findByRange(rangeInput1, rangeInput2);
         }
         else if(value.equalsIgnoreCase("INDEXFILE")){
+          // btree or hash implement this optimally (KG: my guess btree)
 
         }
 
