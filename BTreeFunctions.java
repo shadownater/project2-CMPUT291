@@ -34,9 +34,9 @@ public class BTreeFunctions {
         // Calculate query time
         afterTime = System.nanoTime();
 
-        queryTime = afterTime - beforeTime;
+        queryTime += (afterTime - beforeTime);
         queryTime *= 0.001;
-        System.out.println("Records retrieved: " + count + ", Query time: " + queryTime + " microseconds");
+        System.out.println("Records retrieved: " + count + ", Execution time: " + queryTime + " microseconds");
 
         // Save the query time to a file
         try {
@@ -94,11 +94,10 @@ public class BTreeFunctions {
         String s1 = new String( data.getData() , StandardCharsets.UTF_8 );
         if (s1.equals(input)) {
           count += 1;
-          
-          // Pause timer, append difference to queryTime
+
           afterTime = System.nanoTime();
           queryTime += (afterTime - beforeTime);
-
+          
           // Print result to answers
           try {
             PrintWriter out = new PrintWriter(
@@ -139,7 +138,7 @@ public class BTreeFunctions {
       queryTime *= 0.001;
 
       cursor.close();
-      System.out.println("records retrieved: " + count +
+      System.out.println("Records retrieved: " + count +
                          ", Execution time: " + queryTime + " microsecond");
 
     } catch (DatabaseException dbe) {
@@ -151,62 +150,70 @@ public class BTreeFunctions {
   }
 
   public void findByRangeB(String lowInput, String upperInput) {
-    /*DatabaseEntry lowKeyValue = new DatabaseEntry(lowInput.getBytes());
-    lowKeyValue.setSize(lowInput.length());
-
-    DatabaseEntry upperKeyValue = new DatabaseEntry(upperInput.getBytes());
-    upperKeyValue.setSize(upperInput.length());
+    DatabaseEntry keyValue = new DatabaseEntry(lowInput.getBytes());
+    keyValue.setSize(lowInput.length());
     
     DatabaseEntry data= new DatabaseEntry();
-    DatabaseEntry key = new DatabaseEntry();
-
-    String d;
     
     try {
       // Create cursors and oprStatus
-      Cursor cursorLow = Globals.my_table.openCursor(null, null);
-      Cursor cursorUpper = Globals.my_table.openCursor(null, null);
-
-      OperationStatus oprStatus;
+      Cursor cursor = Globals.my_table.openCursor(null, null);
+      int count = 0;
       
       // Start timer
-      int count = 0;
       beforeTime = System.nanoTime();
 
       // make a while loop and execute the search
       // Start counting from first key larger and stop before first key smaller
-      oprStatus = cursorLow.getFirst(lowKeyValue, data, null);
-      while (oprStatus == OperationStatus.SUCCESS) {
+      OperationStatus oprStatus = cursor.getSearchKeyRange(keyValue, data, null);
+      String s1 = new String(data.getData(), StandardCharsets.UTF_8);
+      
+      while (oprStatus == OperationStatus.SUCCESS && s1.compareTo(upperInput) <= 0) {
+        count += 1;
 
-        // If key >= lower and key <= upper:
-        String d = String(data.getData());
+        afterTime = System.nanoTime();
+        queryTime += (afterTime - beforeTime);
         
-        System.out.println("\nData: " + stuff);
+        // Print results to answers
+        try {
+          PrintWriter out = new PrintWriter(
+            new BufferedWriter(new FileWriter(Globals.answers.getName(), true)));
 
-        oprStatus = cursorLow.getNext(lowKeyValue, data, null);
+          String keyStuff = new String(keyValue.getData());
+          String dataStuff = new String(data.getData());
+
+          // one line for the key string:
+          out.println(keyStuff);
+
+          // one line for the data string:
+          out.println(dataStuff);
+
+          // and one line for an empty String:
+          out.println();
+
+          out.close();
+
+        } catch (IOException e) {
+          System.err.println("PrintWriter error: " + e);
+          System.exit(1);
+        }
+
+        beforeTime = System.nanoTime();
+        
+        // Start new DatabaseEntry every time, otherwise old data sticks around
+        data = new DatabaseEntry();
+        oprStatus = cursor.getNext(keyValue, data, null);
+        s1 = new String(data.getData(), StandardCharsets.UTF_8);        
       }
 
       afterTime = System.nanoTime();
-      queryTime = afterTime - beforeTime;
+      queryTime += (afterTime - beforeTime);
       queryTime *= 0.001;
-      System.out.println("Query time: " + queryTime + " microseconds");
-      System.out.println("Count: " + count);
 
-      try {
-        PrintWriter out = new PrintWriter(
-          new BufferedWriter(new FileWriter(Globals.answers.getName(), true)));
-
-        out.println("Range Search: " + queryTime);
-        out.close();
-        System.out.println("Results written.");
-        
-      } catch (IOException e) {
-        System.err.println("PrintWriter error: " + e.toString());
-        System.exit(1);
-      }
-
-      cursorLow.close();
-      cursorUpper.close();
+      cursor.close();
+      
+      System.out.println("Records retrieved: " + count +
+                         ", Execution time: " + queryTime + " microseconds");
 
     } catch (DatabaseException dbe) {
       System.err.println("DBE error: " + dbe.toString());
@@ -214,7 +221,6 @@ public class BTreeFunctions {
     } catch (NullPointerException e) {
       System.err.println("Database Unpopulated!");
     }
-    }*/
   }
 }
                        
