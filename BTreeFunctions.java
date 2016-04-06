@@ -94,7 +94,12 @@ public class BTreeFunctions {
         String s1 = new String( data.getData() , StandardCharsets.UTF_8 );
         if (s1.equals(input)) {
           count += 1;
+          
+          // Pause timer, append difference to queryTime
+          afterTime = System.nanoTime();
+          queryTime += (afterTime - beforeTime);
 
+          // Print result to answers
           try {
             PrintWriter out = new PrintWriter(
               new BufferedWriter(new FileWriter(Globals.answers.getName(), true)));
@@ -118,18 +123,24 @@ public class BTreeFunctions {
             System.exit(1);
           }
 
-          cursor.close();
-
-          System.out.println("Records retrieved: " + count + ", Execution time: " + queryTime + " microseconds");
-          
-          return;
+          // Start timer again
+          beforeTime = System.nanoTime();
         }
-        
+
+        // Start a new DatabaseEntry every time, otherwise old data sticks around
         data = new DatabaseEntry();
         oprStatus = cursor.getNext(keyValue, data, null);
       }
 
-      System.out.println("Data DNE");
+      // We are at the end, calculate end time
+      afterTime = System.nanoTime();
+
+      queryTime += (afterTime - beforeTime);
+      queryTime *= 0.001;
+
+      cursor.close();
+      System.out.println("records retrieved: " + count +
+                         ", Execution time: " + queryTime + " microsecond");
 
     } catch (DatabaseException dbe) {
       System.err.println("DBE error: " + dbe.toString());
