@@ -72,7 +72,61 @@ public class BTreeFunctions {
   }
 
   public void findByRangeB(String lowInput, String upperInput) {
-    System.out.println("Range");
+    DatabaseEntry lowKeyValue = new DatabaseEntry(lowInput.getBytes());
+    lowKeyValue.setSize(lowInput.length());
+
+    DatabaseEntry upperKeyValue = new DatabaseEntry(upperInput.getBytes());
+    upperKeyValue.setSize(upperInput.length());
+
+    DatabaseEntry key = new DatabaseEntry();
+    DatabaseEntry data = new DatabaseEntry();
+
+    try {
+      // Create one cursor
+      Cursor cursor = Globals.my_table.openCursor(null, null);
+
+      // Start timer
+      beforeTime = System.nanoTime();
+
+      // make a while loop and execute the search
+      // Start from first key larger and stop before first key smaller
+      int count = 0; // use to tell if we got no results
+      OperationStatus oprStatus = cursor.getFirst(key, data, LockMode.DEFAULT);
+      while (oprStatus == OperationStatus.SUCCESS) {
+        if ( key.compareTo(upperKeyValue) <= 0 && key.compareTo(lowKeyValue) ){
+             count += 1;
+          }
+        
+          oprStatus = cursor.getNext(key, data, LockMode.DEFAULT);
+      }
+
+      afterTime = System.nanoTime();
+      queryTime = afterTime - beforeTime;
+        queryTime *= 0.001;
+        System.out.println("Query time: " + queryTime + " microseconds");
+        System.out.println("Count: " + count);
+      }
+
+      try {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Globals.answers.getName(), true)));
+
+        out.println("Range Search: " + queryTime);
+        out.close();
+        System.out.println("Results written.");
+        
+      } catch (IOException e) {
+        System.err.println("PrintWriter error: " + e.toString());
+        System.exit(1);
+      }
+      
+      cursor.close();
+
+    } catch (DatabaseException dbe) {
+      System.err.println("DBE error: " + dbe.toString());
+      System.exit(1);
+    } catch (NullPointerException e) {
+      System.err.println("Database Unpopulated!");
+    }
   }
 }
                        
