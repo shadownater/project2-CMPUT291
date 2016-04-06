@@ -30,7 +30,7 @@ public class AddData{
     try {
       Cursor cursor = Globals.my_table.openCursor(null, null);
       
-      for (int i = 0; i < 100000; i++) {
+      for (int i = 0; i < 15; i++) { //**100000
 
         do{
         
@@ -78,10 +78,12 @@ public class AddData{
         /* to insert the key/data pair into the database */
         Globals.my_table.putNoOverwrite(null, kdbt, ddbt);
         count++;
-        if (count%20000 == 0)System.out.println("Key: " + s1 + "\nData: " + s2);
+        if (true)System.out.println("Key: " + s1 + "\nData: " + s2); //count%20000 == 0
+        
       }
       System.out.println("Table successfully populated!");
       System.out.println("Count's value is: " + count);
+      cursor.close();
     }
     catch (DatabaseException dbe) {
       System.err.println("Populate the table: "+dbe.toString());

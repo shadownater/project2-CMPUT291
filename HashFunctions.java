@@ -8,6 +8,8 @@ import java.io.File.*;
 public class HashFunctions{
 
   long beforeTime, afterTime, queryTime;
+
+
   
 //this function uses the hash table setup to search for a given key
   public void findByKey(String input){
@@ -71,22 +73,80 @@ public class HashFunctions{
         
       //do this 4 times with different values each time!
       //then record the average
-      //put the retrieved key/data pairs in a location called answers
-      //SEE ASSIGNMENT for the layout of that file
+
       }else{
       //if failure - didn't find anything
         System.out.println("Unable to find given key.");
       }
       
     }catch(DatabaseException dbe){
-      System.err.println("Search by key: "+dbe.toString());
+      System.err.println("Search by key error: "+dbe.toString());
       System.exit(1);
     }
     
   }
 
+
+
+//this function finds the keys related to a given data input
   public void findByData(String input){
-    System.out.println("Find by data haha!");
+
+
+    DatabaseEntry dataValue = new DatabaseEntry();
+    //dataValue.setSize(input.length());
+    
+    DatabaseEntry keys = new DatabaseEntry();
+    OperationStatus opSts;
+    //ArrayList<DatabaseEntry> myList = new ArrayList<DatabaseEntry>();
+
+    String dataResult, keyResult;
+    int count=0;
+    
+     try{
+
+      Cursor cursor = Globals.my_table.openCursor(null, null);
+    
+    //sooo... gotta check EVERY SINGLE ENTRY to see if its data is the specified data
+    //record the keys that match in an arraylist of DatabaseEntry
+
+      for(int i=0; i < 15; i++){ //***100000
+
+      opSts = cursor.getNext(keys, dataValue, null);
+
+      //if success - found something
+      if(opSts == OperationStatus.SUCCESS){
+
+        //compare against the data you have and the key's
+        dataResult = new String(dataValue.getData());
+
+        keyResult = new String(keys.getData());
+
+        //test code
+        System.out.println("Data: " + dataResult + "\n");
+        
+        if(input.equals(dataResult)){
+          //found a match!
+          System.out.println("" + cursor.count() + " key(s) successfully found.");
+          System.out.println("Data is: " + dataResult + "\nKey result is: " + keyResult);
+
+          
+        }else{
+          //didn't find a match for this time
+          count++;
+        }
+
+      }
+     
+      
+    }
+
+    if(count==100000) System.out.println("No keys found for inputted data.");
+
+     }catch(DatabaseException dbe){
+      System.err.println("Search by data error: "+dbe.toString());
+      System.exit(1);
+    }
+    
   }
 
 //finds: low <= x <= upp
