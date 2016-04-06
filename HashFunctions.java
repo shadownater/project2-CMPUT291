@@ -223,7 +223,7 @@ public class HashFunctions{
           //compare the key, see if it is within the range
 
           //this seems to be broken
-          if(lowInput.compareTo(keyResult) >= 0 && upperInput.compareTo(keyResult) <= 0){
+          if(keyResult.compareTo(lowInput) >= 0 && keyResult.compareTo(upperInput) <= 0){
             //in here if the string is valid!
 
             total++;
