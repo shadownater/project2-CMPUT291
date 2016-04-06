@@ -82,7 +82,6 @@ public class AddData{
         
       }
       System.out.println("Table successfully populated!");
-      System.out.println("Count's value is: " + count);
       cursor.close();
     }
     catch (DatabaseException dbe) {

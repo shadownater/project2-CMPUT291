@@ -231,7 +231,6 @@ public class Main{
 
   public static void main(String[] args){
     //get the args, make sure there are args
-    System.out.println(args.length);
     if(args.length == 1){
 
       //takes: btree, hash, indexfile

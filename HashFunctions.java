@@ -29,7 +29,7 @@ public class HashFunctions{
 
       //if success - found something
       if(opSts == OperationStatus.SUCCESS){
-        System.out.println("Key(s) successfully found. Found " + cursor.count() + " key(s).");
+        System.out.println("\nKey(s) successfully found. Found " + cursor.count() + " key(s).");
         
         //get time stamp
         afterTime = System.nanoTime();
@@ -124,8 +124,8 @@ public class HashFunctions{
           
           if(input.equals(dataResult)){
             //found a match!
-            System.out.println("" + cursor.count() + " key(s) successfully found.");
-            System.out.println("Data is: " + dataResult + "\nKey result is: " + keyResult);     
+            System.out.println("\n" + cursor.count() + " key(s) successfully found.");
+               
             
             //add the key to the answers.txt
             
