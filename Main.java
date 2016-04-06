@@ -29,7 +29,7 @@ public class Main{
       Globals.secDbConfig.setSortedDuplicates(true);
       Globals.secDbConfig.setKeyCreator(Globals.keyCreator);
       Globals.secDbConfig.setType(DatabaseType.BTREE);
-
+      
       System.out.println("Database setup is: indexfile.");    
     }
   
@@ -59,6 +59,7 @@ public class Main{
 
     HashFunctions hasher = new HashFunctions();
     IndexfileFunctions indexer = new IndexfileFunctions();
+    BTreeFunctions climber = new BTreeFunctions();
     
     AddData add = new AddData();  
 
@@ -129,7 +130,7 @@ public class Main{
 
         //do the thing based on the chosen type on run:
         if(value.equalsIgnoreCase("BTREE")){
-          
+          climber.findByKeyB(keyInput);
           
         }
         else if(value.equalsIgnoreCase("HASH")){
@@ -157,7 +158,7 @@ public class Main{
         String dataInput = scanner.nextLine();
 
         if(value.equalsIgnoreCase("BTREE")){
-          
+          climber.findByDataB(dataInput);
         }
         else if(value.equalsIgnoreCase("HASH")){
           hasher.findByData(dataInput);
@@ -185,7 +186,7 @@ public class Main{
         String rangeInput2 = scanner.nextLine();
         
         if(value.equalsIgnoreCase("BTREE")){
-          
+          climber.findByRangeB(rangeInput1, rangeInput2);
         }
         else if(value.equalsIgnoreCase("HASH")){
           hasher.findByRange(rangeInput1, rangeInput2);
