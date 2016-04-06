@@ -30,7 +30,7 @@ public class AddData{
     try {
       Cursor cursor = Globals.my_table.openCursor(null, null);
       
-      for (int i = 0; i < 15; i++) { //**100000
+      for (int i = 0; i < 100000; i++) { 
 
         do{
         
@@ -78,7 +78,7 @@ public class AddData{
         /* to insert the key/data pair into the database */
         Globals.my_table.putNoOverwrite(null, kdbt, ddbt);
         count++;
-        if (true)System.out.println("Key: " + s1 + "\nData: " + s2); //count%20000 == 0
+        if (count%20000 == 0)System.out.println("Key: " + s1 + "\nData: " + s2);
         
       }
       System.out.println("Table successfully populated!");
