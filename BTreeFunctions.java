@@ -36,7 +36,6 @@ public class BTreeFunctions {
 
         queryTime += (afterTime - beforeTime);
         queryTime *= 0.001;
-        System.out.println("Records retrieved: " + count + ", Execution time: " + queryTime + " microseconds");
 
         // Save the query time to a file
         try {
@@ -65,9 +64,14 @@ public class BTreeFunctions {
           System.exit(1);
         }
       } else {
-        // If we fail...
-        System.out.println("Key DNE");
-      }
+        afterTime = System.nanoTime();
+
+        queryTime += (afterTime - beforeTime);
+        queryTime *= 0.001;
+      } 
+
+      System.out.println("Records retrieved: " + count + ", Execution Time: " + queryTime + " microseconds");
+      
     } catch (DatabaseException dbe) {
       System.err.println("DBE error: " + dbe.toString());
       System.exit(1);
@@ -91,7 +95,7 @@ public class BTreeFunctions {
       OperationStatus oprStatus = cursor.getFirst(keyValue, data, null);
       
       while( oprStatus == OperationStatus.SUCCESS ) {
-        String s1 = new String( data.getData() , StandardCharsets.UTF_8 );
+        String s1 = new String( data.getData() );
         if (s1.equals(input)) {
           count += 1;
 
@@ -166,11 +170,17 @@ public class BTreeFunctions {
       // make a while loop and execute the search
       // Start counting from first key larger and stop before first key smaller
       OperationStatus oprStatus = cursor.getSearchKeyRange(keyValue, data, null);
-      String s1 = new String(data.getData(), StandardCharsets.UTF_8);
       
-      while (oprStatus == OperationStatus.SUCCESS && s1.compareTo(upperInput) <= 0) {
+      while (oprStatus == OperationStatus.SUCCESS) {
+        String s1 = new String(keyValue.getData());
+        
+        if (s1.compareTo(upperInput) > 0) {
+          break;
+        }
+        
         count += 1;
 
+        // Pause Timer to write results
         afterTime = System.nanoTime();
         queryTime += (afterTime - beforeTime);
         
@@ -198,12 +208,12 @@ public class BTreeFunctions {
           System.exit(1);
         }
 
+        // Start timer again
         beforeTime = System.nanoTime();
         
         // Start new DatabaseEntry every time, otherwise old data sticks around
         data = new DatabaseEntry();
         oprStatus = cursor.getNext(keyValue, data, null);
-        s1 = new String(data.getData(), StandardCharsets.UTF_8);        
       }
 
       afterTime = System.nanoTime();
