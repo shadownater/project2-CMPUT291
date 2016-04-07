@@ -63,7 +63,7 @@ public class IndexfileFunctions{
           
           System.out.println("Results written to answers file.");
           
-          cursor.close();
+          //cursor.close(); problem with this one's location
           
         }catch(IOException e){
           System.err.println("Printwriter error: " + e );
@@ -78,6 +78,8 @@ public class IndexfileFunctions{
       //if failure - didn't find anything
         System.out.println("Unable to find given key.");
       }
+
+      cursor.close();
       
     }catch(DatabaseException dbe){
       System.err.println("Search by key: "+dbe.toString());

@@ -78,7 +78,7 @@ public class AddData{
         /* to insert the key/data pair into the database */
         Globals.my_table.putNoOverwrite(null, kdbt, ddbt);
         count++;
-        if (count%20000 == 0)System.out.println("Key: " + s1 + "\nData: " + s2);
+        //if (count%20000 == 0)System.out.println("Key: " + s1 + "\nData: " + s2);
         
       }
       System.out.println("Table successfully populated!");
