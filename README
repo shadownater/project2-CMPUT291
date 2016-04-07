@@ -1,0 +1,5 @@
+Compile and execute application by running the following in a terminal window:
+
+./mydbtest <arg> 
+
+Where <arg> is one of: btree, hash, indexfile.

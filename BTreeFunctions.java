@@ -2,6 +2,7 @@ import java.util.*;
 import com.sleepycat.db.*;
 import java.io.*;
 import java.io.File.*;
+import java.nio.charset.*;
 
 // This class will handle the cases of using btree
 public class BTreeFunctions {
@@ -17,6 +18,7 @@ public class BTreeFunctions {
     try {
       // Create a cursor
       Cursor cursor = Globals.my_table.openCursor(null,null);
+      int count = 0;
 
       // Start time
       beforeTime = System.nanoTime();
@@ -27,14 +29,13 @@ public class BTreeFunctions {
       // Handle Results:
       if ( oprStatus == OperationStatus.SUCCESS ) {
         // If we succeed...
-        System.out.println("SUCCESS: " + new String(data.getData()));
+        count += 1;
 
         // Calculate query time
         afterTime = System.nanoTime();
 
-        queryTime = afterTime - beforeTime;
+        queryTime += (afterTime - beforeTime);
         queryTime *= 0.001;
-        System.out.println("Query time: " + queryTime + " microseconds");
 
         // Save the query time to a file
         try {
@@ -42,9 +43,16 @@ public class BTreeFunctions {
           
           String keyStuff = new String(keyValue.getData());
           String dataStuff = new String(data.getData());
-          
+
+          // One line for the key string:
           out.println(keyStuff);
+
+          // One line for the data string:
           out.println(dataStuff);
+
+          // And one empty line:
+          out.println();
+          
           out.close();
           System.out.println("Results written to answer file.");
 
@@ -52,13 +60,18 @@ public class BTreeFunctions {
           cursor.close();
           
         } catch (IOException e) {
-          System.err.println("PrintWriter error: " + e.toString());
+          System.err.println("PrintWriter error: " + e);
           System.exit(1);
         }
       } else {
-        // If we fail...
-        System.out.println("Key DNE");
-      }
+        afterTime = System.nanoTime();
+
+        queryTime += (afterTime - beforeTime);
+        queryTime *= 0.001;
+      } 
+
+      System.out.println("Records retrieved: " + count + ", Execution Time: " + queryTime + " microseconds");
+      
     } catch (DatabaseException dbe) {
       System.err.println("DBE error: " + dbe.toString());
       System.exit(1);
@@ -68,58 +81,149 @@ public class BTreeFunctions {
   }
 
   public void findByDataB(String input) {
-    System.out.println("Data");
+    DatabaseEntry keyValue = new DatabaseEntry();
+    DatabaseEntry data = new DatabaseEntry();
+    
+    try {
+      // Create a curson
+      Cursor cursor = Globals.my_table.openCursor(null, null);
+      int count = 0;
+      
+      // Start time
+      beforeTime = System.nanoTime();
+
+      OperationStatus oprStatus = cursor.getFirst(keyValue, data, null);
+      
+      while( oprStatus == OperationStatus.SUCCESS ) {
+        String s1 = new String( data.getData() );
+        if (s1.equals(input)) {
+          count += 1;
+
+          afterTime = System.nanoTime();
+          queryTime += (afterTime - beforeTime);
+          
+          // Print result to answers
+          try {
+            PrintWriter out = new PrintWriter(
+              new BufferedWriter(new FileWriter(Globals.answers.getName(), true)));
+
+            String keyStuff = new String(keyValue.getData());
+            String dataStuff = new String(data.getData());
+
+            // one line for the key string:
+            out.println(keyStuff);
+
+            // one line for the data string:
+            out.println(dataStuff);
+
+            // and one line for an empty String:
+            out.println();
+
+            out.close();
+            
+          } catch (IOException e) {
+            System.err.println("PrintWriter error: " + e);
+            System.exit(1);
+          }
+
+          // Start timer again
+          beforeTime = System.nanoTime();
+        }
+
+        // Start a new DatabaseEntry every time, otherwise old data sticks around
+        data = new DatabaseEntry();
+        oprStatus = cursor.getNext(keyValue, data, null);
+      }
+
+      // We are at the end, calculate end time
+      afterTime = System.nanoTime();
+
+      queryTime += (afterTime - beforeTime);
+      queryTime *= 0.001;
+
+      cursor.close();
+      System.out.println("Records retrieved: " + count +
+                         ", Execution time: " + queryTime + " microsecond");
+
+    } catch (DatabaseException dbe) {
+      System.err.println("DBE error: " + dbe.toString());
+      System.exit(1);
+    } catch (NullPointerException e) {
+      System.err.println("Database Unpopulated!");
+    }
   }
 
   public void findByRangeB(String lowInput, String upperInput) {
-    DatabaseEntry lowKeyValue = new DatabaseEntry(lowInput.getBytes());
-    lowKeyValue.setSize(lowInput.length());
-
-    DatabaseEntry upperKeyValue = new DatabaseEntry(upperInput.getBytes());
-    upperKeyValue.setSize(upperInput.length());
-
-    DatabaseEntry key = new DatabaseEntry();
-    DatabaseEntry data = new DatabaseEntry();
-
+    DatabaseEntry keyValue = new DatabaseEntry(lowInput.getBytes());
+    keyValue.setSize(lowInput.length());
+    
+    DatabaseEntry data= new DatabaseEntry();
+    
     try {
-      // Create one cursor
+      // Create cursors and oprStatus
       Cursor cursor = Globals.my_table.openCursor(null, null);
-
+      int count = 0;
+      
       // Start timer
       beforeTime = System.nanoTime();
 
       // make a while loop and execute the search
-      // Start from first key larger and stop before first key smaller
-      int count = 0; // use to tell if we got no results
-      OperationStatus oprStatus = cursor.getFirst(key, data, LockMode.DEFAULT);
+      // Start counting from first key larger and stop before first key smaller
+      OperationStatus oprStatus = cursor.getSearchKeyRange(keyValue, data, null);
+      
       while (oprStatus == OperationStatus.SUCCESS) {
-        if ( key.compareTo(upperKeyValue) <= 0 && key.compareTo(lowKeyValue) ){
-             count += 1;
-          }
+        String s1 = new String(keyValue.getData());
         
-          oprStatus = cursor.getNext(key, data, LockMode.DEFAULT);
+        if (s1.compareTo(upperInput) > 0) {
+          break;
+        }
+        
+        count += 1;
+
+        // Pause Timer to write results
+        afterTime = System.nanoTime();
+        queryTime += (afterTime - beforeTime);
+        
+        // Print results to answers
+        try {
+          PrintWriter out = new PrintWriter(
+            new BufferedWriter(new FileWriter(Globals.answers.getName(), true)));
+
+          String keyStuff = new String(keyValue.getData());
+          String dataStuff = new String(data.getData());
+
+          // one line for the key string:
+          out.println(keyStuff);
+
+          // one line for the data string:
+          out.println(dataStuff);
+
+          // and one line for an empty String:
+          out.println();
+
+          out.close();
+
+        } catch (IOException e) {
+          System.err.println("PrintWriter error: " + e);
+          System.exit(1);
+        }
+
+        // Start timer again
+        beforeTime = System.nanoTime();
+        
+        // Start new DatabaseEntry every time, otherwise old data sticks around
+        data = new DatabaseEntry();
+        oprStatus = cursor.getNext(keyValue, data, null);
       }
 
       afterTime = System.nanoTime();
-      queryTime = afterTime - beforeTime;
-        queryTime *= 0.001;
-        System.out.println("Query time: " + queryTime + " microseconds");
-        System.out.println("Count: " + count);
-      }
+      queryTime += (afterTime - beforeTime);
+      queryTime *= 0.001;
 
-      try {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Globals.answers.getName(), true)));
-
-        out.println("Range Search: " + queryTime);
-        out.close();
-        System.out.println("Results written.");
-        
-      } catch (IOException e) {
-        System.err.println("PrintWriter error: " + e.toString());
-        System.exit(1);
-      }
-      
       cursor.close();
+      
+      System.out.println("Records retrieved: " + count +
+                         ", Execution time: " + queryTime + " microseconds");
 
     } catch (DatabaseException dbe) {
       System.err.println("DBE error: " + dbe.toString());

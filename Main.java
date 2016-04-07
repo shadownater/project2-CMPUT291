@@ -139,8 +139,8 @@ public class Main{
           
         }
         else if(value.equalsIgnoreCase("INDEXFILE")){
-          // btree or hash implement this optimally (KG: my guess btree)
-          
+          // Use btree function on primary database
+          climber.findByKeyB(keyInput);
         }
           
           //returning from this - go back to the main menu
@@ -165,7 +165,7 @@ public class Main{
           
         }
         else if(value.equalsIgnoreCase("INDEXFILE")){
-          // Note: indexer uses secDb, whose keys are data from my_table
+          // use indexfile function on secondary database
           indexer.findByKey(dataInput);
         }
 
@@ -192,8 +192,8 @@ public class Main{
           hasher.findByRange(rangeInput1, rangeInput2);
         }
         else if(value.equalsIgnoreCase("INDEXFILE")){
-          // btree or hash implement this optimally (KG: my guess btree)
-
+          // Use btree function on primary database          
+          climber.findByRangeB(rangeInput1, rangeInput2);
         }
 
 	
@@ -207,9 +207,7 @@ public class Main{
       // JL: they probably want this to happen right away
       //     since it's being done by a program
       add.destroyTable();
-      // setup(input); <-- needed?
         
-      //returning from search - go back to the main menu
       System.out.println();
     }
     // Case 6
@@ -231,6 +229,7 @@ public class Main{
 
   public static void main(String[] args){
     //get the args, make sure there are args
+
     if(args.length == 1){
 
       //takes: btree, hash, indexfile
